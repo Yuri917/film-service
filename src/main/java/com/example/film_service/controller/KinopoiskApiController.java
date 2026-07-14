@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v2/films")
 @RequiredArgsConstructor
-public class KinopoiskController {
+public class KinopoiskApiController {
 
     private final KinopoiskService kinopoiskService;
 

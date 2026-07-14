@@ -24,7 +24,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/v1/films")
 @RequiredArgsConstructor
-public class FilmController {
+public class LocalFilmController {
 
     private final FilmRepository filmRepository;
     private final ReportService reportService;
@@ -84,6 +84,7 @@ public class FilmController {
         Sort.Direction direction = parts.length > 1 && parts[1].equalsIgnoreCase("desc")
                 ? Sort.Direction.DESC
                 : Sort.Direction.ASC;
+
         return Sort.by(direction, field);
     }
 
