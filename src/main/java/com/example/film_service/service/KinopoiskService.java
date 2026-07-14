@@ -70,6 +70,7 @@ public class KinopoiskService {
             }
 
             return savedFilms;
+
         } catch (HttpClientErrorException e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_GATEWAY,
