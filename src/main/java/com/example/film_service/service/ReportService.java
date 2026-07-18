@@ -15,6 +15,7 @@ public class ReportService {
 
     public String generateCsv(List<Film> films) {
         StringBuilder sb = new StringBuilder();
+        sb.append("\uFEFF");
         sb.append("id,filmId,filmName,year,rating,description\n");
         for (Film film : films) {
             sb.append(film.getId()).append(",");

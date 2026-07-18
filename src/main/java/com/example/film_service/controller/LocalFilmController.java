@@ -1,10 +1,9 @@
 package com.example.film_service.controller;
 
 import com.example.film_service.entity.Film;
-import com.example.film_service.repository.FilmRepository;
 import com.example.film_service.service.EmailService;
+import com.example.film_service.service.LocalFilmService;
 import com.example.film_service.service.ReportService;
-import com.example.film_service.specification.FilmSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,18 +25,18 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class LocalFilmController {
 
-    private final FilmRepository filmRepository;
+    private final LocalFilmService localFilmService;
     private final ReportService reportService;
     private final EmailService emailService;
 
     @GetMapping
     public List<Film> getAllFilms() {
-        return filmRepository.findAll();
+        return localFilmService.getFilms();
     }
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
-        return filmRepository.save(film);
+        return localFilmService.addFilm(film);
     }
 
     @GetMapping("/search")
@@ -55,16 +54,14 @@ public class LocalFilmController {
         Sort sortOrder = parseSort(sort);
         Pageable pageable = PageRequest.of(page, size, sortOrder);
 
-        return filmRepository.findAll(
-                FilmSpecification.filterBy(
-                        filmName,
-                        year,
-                        yearFrom,
-                        yearTo,
-                        ratingFrom,
-                        ratingTo),
-                pageable
-        );
+        return localFilmService.searchFilms(
+                filmName,
+                year,
+                yearFrom,
+                yearTo,
+                ratingFrom,
+                ratingTo,
+                pageable);
     }
 
     private static final Set<String> ALLOWED_SORT_FIELDS =
@@ -98,9 +95,13 @@ public class LocalFilmController {
             @RequestParam(required = false) Double ratingFrom,
             @RequestParam(required = false) Double ratingTo) {
 
-        List<Film> films = filmRepository.findAll(
-                FilmSpecification.filterBy(filmName, year, yearFrom, yearTo, ratingFrom, ratingTo)
-        );
+        List<Film> films = localFilmService.searchFilms(
+                filmName,
+                year,
+                yearFrom,
+                yearTo,
+                ratingFrom,
+                ratingTo);
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -126,9 +127,13 @@ public class LocalFilmController {
             @RequestParam(required = false) Double ratingFrom,
             @RequestParam(required = false) Double ratingTo) {
 
-        List<Film> films = filmRepository.findAll(
-                FilmSpecification.filterBy(filmName, year, yearFrom, yearTo, ratingFrom, ratingTo)
-        );
+        List<Film> films = localFilmService.searchFilms(
+                filmName,
+                year,
+                yearFrom,
+                yearTo,
+                ratingFrom,
+                ratingTo);
 
         String report;
         String attachmentName;
