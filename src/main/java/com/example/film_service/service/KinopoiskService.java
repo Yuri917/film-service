@@ -17,9 +17,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +38,17 @@ public class KinopoiskService {
     @Transactional
     public List<Film> searchAndSaveFilms(String keyword, Integer page) {
         try {
-            String url = API_URL + "?keyword=" + keyword;
-            if (page != null) {
-                url += "&page=" + page;
-            }
+//            String url = API_URL + "?keyword=" + keyword;
+//            if (page != null) {
+//                url += "&page=" + page;
+//            }
+
+            // 1. Формируем URL безопасно (используя UriComponentsBuilder для кодирования кириллицы)
+            String url = UriComponentsBuilder.fromUriString(API_URL)
+                    .queryParam("keyword", keyword)
+                    .queryParamIfPresent("page", Optional.ofNullable(page))
+                    .build()
+                    .toUriString();
 
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set("X-API-KEY", apiKey);
@@ -64,9 +73,17 @@ public class KinopoiskService {
                         film.setYear(parseYear(dto.getYear()));
                         film.setRating(parseRating(dto.getRating()));
                         film.setDescription(dto.getDescription());
-                        savedFilms.add(filmRepository.save(film));
+
+                        // Вместо сохранения сразу, мы просто добавляем объект в список
+                        savedFilms.add(film);
+                        //savedFilms.add(filmRepository.save(film));
                     }
                 }
+            }
+
+            // 2. Сохраняем ВСЕ новые фильмы ОДНИМ запросом к базе данных
+            if (!savedFilms.isEmpty()) {
+                filmRepository.saveAll(savedFilms);
             }
 
             return savedFilms;
