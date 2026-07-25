@@ -71,29 +71,6 @@ public class EmailService {
                     contentType
             );
 
-//            helper.addAttachment(attachmentName, new DataSource() {
-//
-//                @Override
-//                public InputStream getInputStream() throws IOException {
-//                    return new ByteArrayInputStream(attachment);
-//                }
-//
-//                @Override
-//                public OutputStream getOutputStream() throws IOException {
-//                    throw new UnsupportedOperationException();
-//                }
-//
-//                @Override
-//                public String getContentType() {
-//                    return "text/csv";
-//                }
-//
-//                @Override
-//                public String getName() {
-//                    return attachmentName;
-//                }
-//            });
-
             mailSender.send(message);
 
             log.info("Отчёт успешно отправлен на {}", toEmail);

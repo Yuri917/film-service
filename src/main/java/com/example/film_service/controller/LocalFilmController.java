@@ -127,6 +127,7 @@ public class LocalFilmController {
             @RequestParam(required = false) Double ratingFrom,
             @RequestParam(required = false) Double ratingTo) {
 
+        // Здесь нет пагинации. Если фильмов 10 000, мы загрузим их всех в память - риск OutOfMemoryError.
         List<Film> films = localFilmService.searchFilms(
                 filmName,
                 year,
@@ -135,8 +136,8 @@ public class LocalFilmController {
                 ratingFrom,
                 ratingTo);
 
-        String report;
-        String attachmentName;
+        String report; // текст отчёта
+        String attachmentName; // наименование файла вложения
 
         if ("xml".equalsIgnoreCase(format)) {
             report = reportService.generateXml(films);

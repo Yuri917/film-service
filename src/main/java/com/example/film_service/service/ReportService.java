@@ -11,11 +11,19 @@ import java.util.List;
 @Service
 public class ReportService {
 
-    private final XmlMapper xmlMapper = (XmlMapper) new XmlMapper().enable(SerializationFeature.INDENT_OUTPUT);
+    // private final XmlMapper xmlMapper = (XmlMapper) new XmlMapper().enable(SerializationFeature.INDENT_OUTPUT);
+
+    private final XmlMapper xmlMapper;
+
+    // Конструктор для инициализации XmlMapper с нужными настройками
+    public ReportService() {
+        this.xmlMapper = new XmlMapper();
+        this.xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
 
     public String generateCsv(List<Film> films) {
         StringBuilder sb = new StringBuilder();
-        sb.append("\uFEFF");
+        sb.append("\uFEFF"); // BOM для корректного отображения кириллицы в Excel
         sb.append("id,filmId,filmName,year,rating,description\n");
         for (Film film : films) {
             sb.append(film.getId()).append(",");
@@ -37,30 +45,20 @@ public class ReportService {
         }
     }
 
-//    Каждый replace создаёт новую строку в памяти. Если 100 000 фильмов с длинными описаниями —
-//    это сотни тысяч временных объектов. Проблема для сборщика мусора.
-//    private String escapeCsv(String value) {
-//        if (value == null) {
-//            return "";
-//        }
-//
-//        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-//            return "\"" + value.replace("\"", "\"\"") + "\"";
-//        }
-//
-//        return value;
-//    }
-
     private String escapeCsv(String value) {
-        if (value == null) return "";
+        if (value == null) {
+            return "";
+        }
 
         boolean needsQuotes = value.contains(",") || value.contains("\"") || value.contains("\n");
-        if (!needsQuotes) return value;
+        if (!needsQuotes) {
+            return value;
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append('"');
         for (char c : value.toCharArray()) {
-            if (c == '"') sb.append('"'); // удваиваем
+            if (c == '"') sb.append('"'); // удваиваем кавычку
             sb.append(c);
         }
         sb.append('"');
